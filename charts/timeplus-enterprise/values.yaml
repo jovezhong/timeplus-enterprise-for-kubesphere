@@ -162,8 +162,8 @@ timeplusd:
   # -- Make sure at least 2 cores are assigned to each timeplusd
   resources:
     limits:
-      cpu: "32"
-      memory: "60Gi"
+      cpu: "2"
+      memory: "6Gi"
     requests:
       cpu: "1"
       memory: 4Gi
