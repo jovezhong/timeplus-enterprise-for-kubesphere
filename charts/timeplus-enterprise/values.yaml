@@ -95,7 +95,7 @@ timeplusd:
   # -- Labels that apply to pod and sts
   labels: {}
   # -- Current only support replicas 1 or 3
-  replicas: 3
+  replicas: 1
 
   # -- Control both timeplusd and init job
   affinity: *globalAffinity
