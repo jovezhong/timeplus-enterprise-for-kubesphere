@@ -23,8 +23,8 @@ data:
 
     auth-provider: proton
     enable-authentication: true
-    timeplusd-admin-username: proton
-    timeplusd-admin-password: {{ .Values.timeplusd.defaultAdminPassword }}
+    timeplusd-admin-username: {{ .Values.timeplusd.defaultAdminUsername | quote }}
+    timeplusd-admin-password: {{ .Values.timeplusd.defaultAdminPassword | quote }}
 
     timeplusd-replicas: {{ .Values.timeplusd.replicas | default 3 }}
     

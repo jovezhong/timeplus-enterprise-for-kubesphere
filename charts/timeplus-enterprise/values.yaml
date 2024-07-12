@@ -23,6 +23,24 @@ timeplus:
   # -- If you'd like to use a non 80 port and auth is enabled, you need to modify the baseUrl and port value in auth section as well. Make sure the port number below is quoted.
   port: &timeplusPort "80"
 
+provision:
+  # -- Once enabled, a Job will be created to provision default resources such as users, licenses, and etc.
+  # This Job shares the same configurations (e.g. resource limit) as `timeplusCli` below
+  enabled: true
+
+  # -- The users that you can use to login Timeplus web. You will need to provision at least one user if you want to use
+  # Timeplus web and Timeplus appserver.
+  users:
+    - username: timeplus_user
+      password: changeme
+
+  # license:
+  #   key: license_key
+  #   file: |
+  #     -----BEGIN LICENSE FILE-----
+  #     LICENSE CONTENT
+  #     -----END LICENSE FILE-----
+
 # Timeplus core services
 timeplusWeb:
   enabled: true
@@ -31,7 +49,7 @@ timeplusWeb:
   image: timeplus/timeplus-web
 
   # @ignored
-  tag: 1.4.18
+  tag: 1.4.21
 
   # -- Labels that apply to pod and deployment
   labels: {}
@@ -52,7 +70,7 @@ timeplusAppserver:
   image: timeplus/timeplus-appserver
 
   # @ignored
-  tag: 1.4.34
+  tag: 1.4.36
 
   # -- Labels that apply to pod and deployment
   labels: {}
@@ -72,7 +90,7 @@ timeplusd:
   image: timeplus/timeplusd
 
   # @ignored
-  tag: 2.2.8
+  tag: 2.3.7
 
   # -- Labels that apply to pod and sts
   labels: {}
@@ -82,16 +100,12 @@ timeplusd:
   # -- Control both timeplusd and init job
   affinity: *globalAffinity
 
-  # -- The admin username is hardcoded to be `proton`. Timeplus appserver will use this username and password to connect to
-  # timeplusd to perform some administration operations such as user management.
-  # You are NOT able to use login Timeplus web. Please use the `additionalUsers` below.
-  defaultAdminPassword: timeplusd@t+
+  # @ignored
+  # This cannot be changed
+  defaultAdminUsername: proton
 
-  # -- The users that you can use to login Timeplus web. You will need to provision at least one user if you want to use
-  # Timeplus web and Timeplus appserver.
-  additionalUsers:
-    - username: timeplus_user
-      password: changeme
+  # -- Timeplus appserver will use this username and password to connect to timeplusd to perform some administration operations such as user management.
+  defaultAdminPassword: timeplusd@t+
 
   initJob:
     imageRegistry: *globalImageRegistry
@@ -193,7 +207,7 @@ timeplusCli:
   image: timeplus/timeplus-cli
 
   # @ignored
-  tag: 1.0.9
+  tag: 1.0.13
 
   affinity: *globalAffinity
 
@@ -210,7 +224,7 @@ kv:
   image: timeplus/timeplusd
 
   # @ignored
-  tag: 2.2.8
+  tag: 2.3.7
 
   # -- Labels that apply to pod and sts
   labels: {}
@@ -234,10 +248,10 @@ kv:
 
 ingress:
   # -- You will need to manually create ingress if you don't want to enable it here.
-  enabled: true
+  enabled: false
 
   # -- Only Nginx controller is tested. https://kubernetes.github.io/ingress-nginx/
-  ingressClassName: nginx
+  # ingressClassName: nginx
 
   # Uncomment the tls section below to enable https.
   # You will need to follow

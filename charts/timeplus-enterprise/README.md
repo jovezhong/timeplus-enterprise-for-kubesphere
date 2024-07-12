@@ -1,8 +1,8 @@
 ## Timeplus Installation Guide for Kubernetes
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.2.5](https://img.shields.io/badge/AppVersion-2.2.5-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.3.7](https://img.shields.io/badge/AppVersion-2.3.7-informational?style=flat-square)
 
-A Helm chart for deploying a Timeplus enterprise stack.
+A Helm chart for deploying a cluster of Timeplus Enterprise.
 
 **Homepage:** <https://www.timeplus.com/>
 
@@ -110,19 +110,10 @@ null
 			<td>ingress.enabled</td>
 			<td>bool</td>
 			<td><pre lang="json">
-true
+false
 </pre>
 </td>
 			<td>You will need to manually create ingress if you don't want to enable it here.</td>
-		</tr>
-		<tr>
-			<td>ingress.ingressClassName</td>
-			<td>string</td>
-			<td><pre lang="json">
-"nginx"
-</pre>
-</td>
-			<td>Only Nginx controller is tested. https://kubernetes.github.io/ingress-nginx/</td>
 		</tr>
 		<tr>
 			<td>kv.affinity</td>
@@ -203,6 +194,29 @@ true
 </pre>
 </td>
 			<td>PV-related settings.</td>
+		</tr>
+		<tr>
+			<td>provision.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Once enabled, a Job will be created to provision default resources such as users, licenses, and etc. This Job shares the same configurations (e.g. resource limit) as `timeplusCli` below</td>
+		</tr>
+		<tr>
+			<td>provision.users</td>
+			<td>list</td>
+			<td><pre lang="json">
+[
+  {
+    "password": "changeme",
+    "username": "timeplus_user"
+  }
+]
+</pre>
+</td>
+			<td>The users that you can use to login Timeplus web. You will need to provision at least one user if you want to use Timeplus web and Timeplus appserver.</td>
 		</tr>
 		<tr>
 			<td>timeplus.port</td>
@@ -296,6 +310,69 @@ true
 		</tr>
 		<tr>
 			<td>timeplusAppserver.resources</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.affinity</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.image</td>
+			<td>string</td>
+			<td><pre lang="json">
+"timeplus/timeplus-cli"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.imageRegistry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>timeplusCli.labels</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Labels that apply to pod and sts</td>
+		</tr>
+		<tr>
+			<td>timeplusCli.resources</td>
 			<td>object</td>
 			<td><pre lang="json">
 {}
@@ -430,20 +507,6 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>timeplusd.additionalUsers</td>
-			<td>list</td>
-			<td><pre lang="json">
-[
-  {
-    "password": "changeme",
-    "username": "timeplus_user"
-  }
-]
-</pre>
-</td>
-			<td>The users that you can use to login Timeplus web. You will need to provision at least one user if you want to use Timeplus web and Timeplus appserver.</td>
-		</tr>
-		<tr>
 			<td>timeplusd.affinity</td>
 			<td>object</td>
 			<td><pre lang="json">
@@ -468,7 +531,7 @@ true
 "timeplusd@t+"
 </pre>
 </td>
-			<td>The admin username is hardcoded to be `proton`. Timeplus appserver will use this username and password to connect to timeplusd to perform some administration operations such as user management. You are NOT able to use login Timeplus web. Please use the `additionalUsers` below.</td>
+			<td>Timeplus appserver will use this username and password to connect to timeplusd to perform some administration operations such as user management.</td>
 		</tr>
 		<tr>
 			<td>timeplusd.enabled</td>

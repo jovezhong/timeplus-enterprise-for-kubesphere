@@ -9,20 +9,11 @@ metadata:
 data:
   z100-admin-user.yaml: |-
     users:
-      proton:
+      {{ .Values.timeplusd.defaultAdminUsername }}:
         access_management: 1
         default_database: default
         networks:
           ip: ::/0
-        password: {{ .Values.timeplusd.defaultAdminPassword }}
-  z200-additional-users.yaml: |-
-    users:
-    {{- range .Values.timeplusd.additionalUsers }}
-      {{ .username }}:
-        default_database: default
-        networks:
-          ip: ::/0
-        password: {{ .password | quote }}
-    {{- end }}   
+        password: {{ .Values.timeplusd.defaultAdminPassword | quote }}
 
 {{- end }}
