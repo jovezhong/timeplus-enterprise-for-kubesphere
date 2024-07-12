@@ -1,0 +1,5 @@
+{{- if .Values.timeplusAppserver.enabled }}
+{{- if not .Values.kv.enabled }}
+{{ fail "Timeplus appserver depends on KV. Please either disable Timeplus appserver or enable KV."}}
+{{- end }}
+{{- end }}

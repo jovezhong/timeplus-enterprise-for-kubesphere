@@ -1,0 +1,18 @@
+{{- if .Values.timeplusd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timeplusd-config
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+data:
+  default-config.yaml: |-
+{{ .Files.Get "resources/timeplusd/config.yaml" | indent 4 }}
+  cluster-config.yaml: |-
+{{ .Files.Get "resources/timeplusd/cluster-config.yaml" | indent 4 }}
+  custom-config.yaml: |-
+{{ if .Values.timeplusd.config }}
+{{ toYaml .Values.timeplusd.config | indent 4 }}
+{{ end }}
+{{- end }}

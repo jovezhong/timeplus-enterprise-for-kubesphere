@@ -1,0 +1,28 @@
+{{- if .Values.timeplusd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timeplusd-user-config
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+data:
+  z100-admin-user.yaml: |-
+    users:
+      proton:
+        access_management: 1
+        default_database: default
+        networks:
+          ip: ::/0
+        password: {{ .Values.timeplusd.defaultAdminPassword }}
+  z200-additional-users.yaml: |-
+    users:
+    {{- range .Values.timeplusd.additionalUsers }}
+      {{ .username }}:
+        default_database: default
+        networks:
+          ip: ::/0
+        password: {{ .password | quote }}
+    {{- end }}   
+
+{{- end }}

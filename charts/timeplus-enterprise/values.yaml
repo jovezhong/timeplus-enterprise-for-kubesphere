@@ -1,0 +1,253 @@
+global:
+  nodeSelector: {}
+  tolerations: []
+
+  affinity: &globalAffinity {}
+
+  # Image-related settings
+  #
+  # Set image registry
+  # -- When modify this value, also remember to update `prometheus.server.image.repository`
+  imageRegistry: &globalImageRegistry ""
+  imagePullPolicy: &globalImagePullPolicy "IfNotPresent"
+
+  # Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+  # -- These two options are only valid with k8s >= 1.27.0
+  pvcDeleteOnStsDelete: false
+  pvcDeleteOnStsScale: false
+
+timeplus:
+  # -- Public domain or ip address of the cluster, e.g. `timeplus.local`. Do not include http schema or port number.
+  publicDomain: &timeplusPublicDomain null
+
+  # -- If you'd like to use a non 80 port and auth is enabled, you need to modify the baseUrl and port value in auth section as well. Make sure the port number below is quoted.
+  port: &timeplusPort "80"
+
+# Timeplus core services
+timeplusWeb:
+  enabled: true
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplus-web
+
+  # @ignored
+  tag: 1.4.18
+
+  # -- Labels that apply to pod and deployment
+  labels: {}
+  affinity: *globalAffinity
+  resources: {}
+  #   requests:
+  #     cpu: 500m
+  #     memory: 128Mi
+  #   limits:
+  #     cpu: 1000m
+  #     memory: 256Mi
+
+timeplusAppserver:
+  # -- Timeplus web, Timeplus connector will not work properly if Timeplus appserver is not enabled.
+  enabled: true
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplus-appserver
+
+  # @ignored
+  tag: 1.4.34
+
+  # -- Labels that apply to pod and deployment
+  labels: {}
+  # -- Current we don't support replicas > 1
+  replicas: 1
+
+  # -- e.g. `enable-authentication: true`
+  configs: {}
+
+  affinity: *globalAffinity
+  resources: {}
+
+timeplusd:
+  enabled: true
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplusd
+
+  # @ignored
+  tag: 2.2.8
+
+  # -- Labels that apply to pod and sts
+  labels: {}
+  # -- Current only support replicas 1 or 3
+  replicas: 3
+
+  # -- Control both timeplusd and init job
+  affinity: *globalAffinity
+
+  # -- The admin username is hardcoded to be `proton`. Timeplus appserver will use this username and password to connect to
+  # timeplusd to perform some administration operations such as user management.
+  # You are NOT able to use login Timeplus web. Please use the `additionalUsers` below.
+  defaultAdminPassword: timeplusd@t+
+
+  # -- The users that you can use to login Timeplus web. You will need to provision at least one user if you want to use
+  # Timeplus web and Timeplus appserver.
+  additionalUsers:
+    - username: timeplus_user
+      password: changeme
+
+  initJob:
+    imageRegistry: *globalImageRegistry
+    imagePullPolicy: *globalImagePullPolicy
+    image: timeplus/boson
+
+    # @ignored
+    tag: 0.0.2
+    resources: {}
+
+  ingress:
+    # -- Enable ingress if you want to connect to timeplusd directly
+    enabled: false
+
+    # -- To send REST API call to timeplusd, the URL will be http(s)://<publicDomain>:<port><restPath>
+    # e.g.
+    #   - curl http://timeplus.local/timeplusd/info
+    #   - curl http://timeplus.local/timeplusd/v1/ddl/streams
+    restPath: "/timeplusd"
+
+  # -- Update this section if you want to expose timeplusd directly
+  service:
+    # -- Update type to `NodePort` and then all timeplusd ports (rest API, metrics, and etc.) will be exposed.
+    type: ClusterIP
+
+    # This is the port that timeplusd client can connect to. e.g. you can `timeplusd client --port 30863`
+    # Currently you cannot edit the exposed port number of other timeplusd ports.
+    # nodePort: 30863
+
+  # -- PV-related settings.
+
+  storage:
+    log:
+      # -- Mount timeplusd logs on a separated PV. By enabling this you will need to create the PVs beforehand.
+      enabled: false
+      className: local-storage
+      size: 10Gi
+      selector:
+        matchLabels:
+          app: timeplusd-log
+    stream:
+      className: local
+      size: 10Gi
+      selector:
+        matchLabels:
+          app: timeplusd-data-stream
+    history:
+      className: local
+      size: 10Gi
+      selector:
+        matchLabels:
+          app: timeplusd-data-history
+
+  # -- Make sure at least 2 cores are assigned to each timeplusd
+  resources:
+    limits:
+      cpu: "32"
+      memory: "60Gi"
+    requests:
+      cpu: "2"
+      memory: 4Gi
+
+  config: {}
+  # Example for timeplusd config, this will overrides default configs
+  # logger:
+  #   level: "information"
+  #   console: 1
+
+  livenessProbe:
+    failureThreshold: 20
+    httpGet:
+      path: /timeplusd/ping
+      port: http-streaming
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 1
+
+timeplusConnector:
+  enabled: true
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplus-connector
+
+  # @ignored
+  tag: 1.5.3
+
+  # -- Labels that apply to pod and deployment
+  labels: {}
+  affinity: *globalAffinity
+
+  resources: {}
+
+timeplusCli:
+  enabled: false
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplus-cli
+
+  # @ignored
+  tag: 1.0.9
+
+  affinity: *globalAffinity
+
+  # -- Labels that apply to pod and sts
+  labels: {}
+  resources: {}
+
+kv:
+  # -- KV service is required for Timeplus appserver
+  enabled: true
+
+  imageRegistry: *globalImageRegistry
+  imagePullPolicy: *globalImagePullPolicy
+  image: timeplus/timeplusd
+
+  # @ignored
+  tag: 2.2.8
+
+  # -- Labels that apply to pod and sts
+  labels: {}
+  # -- PV-related settings.
+  storage:
+    className: local
+    size: 10Gi
+    selector:
+      matchLabels:
+        app: kv
+
+  resources: {}
+  #   requests:
+  #     cpu: 500m
+  #     memory: 128Mi
+  #   limits:
+  #     cpu: 1000m
+  #     memory: 256Mi
+
+  affinity: *globalAffinity
+
+ingress:
+  # -- You will need to manually create ingress if you don't want to enable it here.
+  enabled: true
+
+  # -- Only Nginx controller is tested. https://kubernetes.github.io/ingress-nginx/
+  ingressClassName: nginx
+
+  # Uncomment the tls section below to enable https.
+  # You will need to follow
+  #   1. https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  #   2. https://kubernetes.github.io/ingress-nginx/user-guide/tls/
+  # to create a k8s secret that contains certificate and private key
+  # tls:
+  #   - hosts: [timeplus.local]
+  #   secretName: "secret-name"
+
+  # -- Must be a DNS name, not an IP address
+  # -- If you want use an ip, pls remove it. it's will match all (equal *).
+  domain: *timeplusPublicDomain

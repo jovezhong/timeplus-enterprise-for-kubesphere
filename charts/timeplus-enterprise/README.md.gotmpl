@@ -1,0 +1,94 @@
+## Timeplus Installation Guide for Kubernetes
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Prerequisites
+
+- ingress-nginx-controller >= v4.6.0
+- helm >= v3.12.3
+
+{{ template "chart.requirementsSection" . }}
+
+
+## Install chart
+
+1. Make sure you have all PVs ready
+2. Update the `tag` of each images
+3. Make sure those images are already in your local registry
+4. Make sure you are using the right kubectl context
+5. Run `helm upgrade --install -n timeplus -f values.yaml --create-namespace timeplus <chart>`
+6. To uninstall, run `helm del timeplus -n timeplus`
+
+{{ template "chart.valuesSectionHtml" . }}
+
+## Architecture
+
+### Timeplus core components
+
+```mermaid
+graph TD
+Ingress[Ingress] -->|/| timeplus-appserver[timeplus-appserver]
+
+timeplus-appserver[timeplus-appserver] --> kv[kv]
+timeplus-appserver[timeplus-appserver] --> timeplus-web[timeplus-web]
+timeplus-appserver[timeplus-appserver] --> timeplus-connector[timeplus-connector]
+timeplus-appserver[timeplus-appserver] --> timeplusd-cluster[timeplusd]
+
+subgraph timeplusd-cluster
+timeplusd[[timeplusd-N]]
+timeplusd[[timeplusd-N]] --> timeplusd-pv[(timeplusd-pv-N)]
+end
+
+create-system-streams[create-system-streams] --> |init| timeplusd-cluster[timeplusd-cluster]
+
+kv[kv] --> kv-pv[(kv-pv)]
+```
+
+### All components
+
+```mermaid
+graph TD
+subgraph Timeplus
+core[core components]
+end
+
+subgraph Auth
+KC[keycloak]
+init-keycloak[init-keycloak]
+init-keycloak --> | init | KC
+end
+
+subgraph Monitoring
+grafana[grafana]
+prometheus[prometheus]
+loki[loki]
+loki-pv[(loki-pv)]
+prometheus-pv[(prometheus-pv)]
+
+grafana --> loki --> loki-pv
+grafana --> prometheus --> prometheus-pv
+end
+
+subgraph Shared-DB
+postgres[postgres]
+postgres-pv[(postgres-pv)]
+
+postgres--> postgres-pv
+end
+
+Ingress[Ingress] -->|/| Timeplus
+Ingress[Ingress] -->|/auth| Auth
+Ingress[Ingress] -->|/monitoring| Monitoring
+
+KC[keycloak] --> Shared-DB
+grafana[grafana] --> Shared-DB
+
+Timeplus --> KC
+
+```

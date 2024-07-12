@@ -1,0 +1,6 @@
+Your Timeplus stack is ready!
+
+{{- if .Values.timeplus.publicDomain }}
+* You can visit Timeplus via http{{- if .Values.ingress.tls }}s{{ end }}://{{ .Values.timeplus.publicDomain -}}{{- if ne .Values.timeplus.port "80" -}}:{{- .Values.timeplus.port }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,78 @@
+
+{{- if .Values.kv.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kv
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+    {{- if .Values.kv.labels }}
+    {{- toYaml .Values.kv.labels | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: 1
+  serviceName: kv-svc
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: {{ ternary "Delete" "Retain" .Values.global.pvcDeleteOnStsDelete }}
+    whenScaled: {{ ternary "Delete" "Retain" .Values.global.pvcDeleteOnStsScale }}
+  selector:
+    matchLabels:
+      {{- include "timeplus.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: kv
+  template:
+    metadata:
+      labels:
+        {{- include "timeplus.podLabels" . | nindent 8 }}
+        {{- if .Values.kv.labels }}
+        {{- toYaml .Values.kv.labels | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: kv
+    spec:
+      {{- dict "global" .Values.global "self" .Values.kv | include "timeplus.nodeAssignment" | nindent 6 }}
+      containers:
+      - name: kv
+        command: ['timeplusd', 'metastore', '--config', '/etc/timeplusd-server/kv_service_config.yaml']
+        image: {{ include "timeplus.fullImage" .Values.kv }}
+        {{- if .Values.kv.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.kv.imagePullPolicy }}
+        {{- end }}
+        ports:
+        - containerPort: 9444
+          name: http
+          protocol: TCP
+        {{- if .Values.kv.resources }}
+        resources:
+          {{- toYaml .Values.kv.resources | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: kv-data
+          mountPath: /var/lib/kv-metastore
+        - name: kv-configs
+          mountPath: /etc/timeplusd-server/kv_service_config.yaml
+          subPath: kv-config.yaml
+        - name: kv-configs
+          mountPath: /etc/timeplusd-server/users.yaml
+          subPath: users.yaml
+      volumes:
+      - name: kv-configs
+        configMap:
+          name: kv-configs
+  volumeClaimTemplates:
+  - metadata:
+      name: kv-data
+    spec:
+      {{- with .Values.kv.storage }}
+      storageClassName: {{ .className }}
+      accessModes:
+      - {{ default .accessMode "ReadWriteOnce" }}
+      volumeMode: Filesystem
+      {{- with .selector }}
+      selector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .size }}
+      {{- end }}
+{{- end }}
