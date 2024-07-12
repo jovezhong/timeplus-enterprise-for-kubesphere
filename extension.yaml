@@ -1,6 +1,6 @@
 apiVersion: kubesphere.io/v1alpha1
 name: timeplus-enterprise
-version: 2.4.0
+version: 2.4.1
 displayName:
   zh: Timeplus 企业版
   en: Timeplus Enterprise

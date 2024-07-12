@@ -165,7 +165,7 @@ timeplusd:
       cpu: "32"
       memory: "60Gi"
     requests:
-      cpu: "2"
+      cpu: "1"
       memory: 4Gi
 
   config: {}
