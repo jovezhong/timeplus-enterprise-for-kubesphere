@@ -5,7 +5,7 @@ displayName:
   zh: Timeplus 企业版
   en: Timeplus Enterprise
 description:
-  zh: 多快好省的流数据平台
+  zh: 多快好省的流数据平台, 内核使用 C++ 编写，提供基于 SQL 和 UDF 的 Kafka 数据处理能力，每秒千万条数据处理，亚秒级端到端处理。
   en: Fast, powerful, cost-efficient real-time platform
 category: streaming-messaging
 keywords:
@@ -21,11 +21,11 @@ maintainers:
     url: ""
 provider:
   zh:
-    name: "Timeplus"
+    name: "上海时加跳动软件技术有限公司"
     email: "info@timeplus.com"
     url: "https://timeplus.com"
   en:
-    name: "Timeplus"
+    name: "Timeplus Inc."
     email: "info@timeplus.com"
     url: "https://timeplus.com"
 icon: ./static/favicon.svg
