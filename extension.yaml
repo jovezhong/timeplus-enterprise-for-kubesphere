@@ -1,11 +1,11 @@
 apiVersion: kubesphere.io/v1alpha1
 name: timeplus-enterprise
-version: 2.3.0
+version: 2.4.0
 displayName:
-  zh: Timeplus Enterprise
+  zh: Timeplus 企业版
   en: Timeplus Enterprise
 description:
-  zh: Fast, powerful, cost-efficient real-time platform
+  zh: 多快好省的流数据平台
   en: Fast, powerful, cost-efficient real-time platform
 category: streaming-messaging
 keywords:
@@ -21,13 +21,13 @@ maintainers:
     url: ""
 provider:
   zh:
-    name: "Jove"
-    email: "jove@timeplus.com"
-    url: ""
+    name: "Timeplus"
+    email: "info@timeplus.com"
+    url: "https://timeplus.com"
   en:
-    name: "Jove"
-    email: "jove@timeplus.com"
-    url: ""
+    name: "Timeplus"
+    email: "info@timeplus.com"
+    url: "https://timeplus.com"
 icon: ./static/favicon.svg
 screenshots:
   - ./static/screenshots/screenshot.png
