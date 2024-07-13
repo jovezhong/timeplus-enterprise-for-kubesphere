@@ -143,21 +143,12 @@ timeplusd:
       enabled: false
       className: local-storage
       size: 10Gi
-      selector:
-        matchLabels:
-          app: timeplusd-log
     stream:
-      className: local
+      className: local-storage
       size: 10Gi
-      selector:
-        matchLabels:
-          app: timeplusd-data-stream
     history:
-      className: local
+      className: local-storage
       size: 10Gi
-      selector:
-        matchLabels:
-          app: timeplusd-data-history
 
   # -- Make sure at least 2 cores are assigned to each timeplusd
   resources:
@@ -230,11 +221,8 @@ kv:
   labels: {}
   # -- PV-related settings.
   storage:
-    className: local
+    className: local-storage
     size: 10Gi
-    selector:
-      matchLabels:
-        app: kv
 
   resources: {}
   #   requests:
