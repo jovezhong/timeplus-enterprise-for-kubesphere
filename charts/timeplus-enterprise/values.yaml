@@ -141,13 +141,13 @@ timeplusd:
     log:
       # -- Mount timeplusd logs on a separated PV. By enabling this you will need to create the PVs beforehand.
       enabled: false
-      className: local-storage
+      className: local
       size: 10Gi
     stream:
-      className: local-storage
+      className: local
       size: 10Gi
     history:
-      className: local-storage
+      className: local
       size: 10Gi
 
   # -- Make sure at least 2 cores are assigned to each timeplusd
@@ -221,7 +221,7 @@ kv:
   labels: {}
   # -- PV-related settings.
   storage:
-    className: local-storage
+    className: local
     size: 10Gi
 
   resources: {}
