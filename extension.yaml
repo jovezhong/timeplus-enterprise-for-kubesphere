@@ -1,6 +1,6 @@
 apiVersion: kubesphere.io/v1alpha1
 name: timeplus-enterprise
-version: 2.4.4
+version: 2.4.5
 displayName:
   zh: Timeplus 企业版
   en: Timeplus Enterprise
@@ -10,13 +10,16 @@ description:
 category: streaming-messaging
 keywords:
   - kafka
+  - database
+  - streaming
+  - sql
 home: https://timeplus.com
 sources:
   - https://github.com/timeplus-io/proton
 kubeVersion: ">=1.25.0-0"
 ksVersion: ">=4.0.0-0"
 maintainers:
-  - name: "Jove"
+  - name: "Jove Zhong"
     email: "jove@timeplus.com"
     url: ""
 provider:
@@ -31,6 +34,7 @@ provider:
 icon: ./static/favicon.svg
 screenshots:
   - ./static/screenshots/screenshot.png
+  - ./static/screenshots/sql_editor.png
 
 # installationMode describes how to install subcharts, it can be HostOnly or Multicluster.
 # In Multicluster mode, the subchart with tag `extension` will only be deployed to the host cluster,

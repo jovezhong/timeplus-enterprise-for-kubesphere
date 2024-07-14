@@ -1,6 +1,6 @@
 base:
   # 配置为ui的svc的名称与端口
-  extSvcName: timeplus
+  extSvcName: timeplus-enterprise
   extSvcPort: 8000
   # 访问ks的域名, e.g. www.ks.com,192.168.50.208.nip.io
   domain: www.ks.com
