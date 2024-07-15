@@ -1,6 +1,6 @@
 apiVersion: kubesphere.io/v1alpha1
 name: timeplus-enterprise
-version: 2.4.7
+version: 2.4.8
 displayName:
   zh: Timeplus 企业版
   en: Timeplus Enterprise
@@ -33,7 +33,6 @@ provider:
     url: "https://timeplus.com"
 icon: ./static/favicon.svg
 screenshots:
-  - ./static/screenshots/screenshot.png
   - ./static/screenshots/sql_editor.png
 
 # installationMode describes how to install subcharts, it can be HostOnly or Multicluster.
