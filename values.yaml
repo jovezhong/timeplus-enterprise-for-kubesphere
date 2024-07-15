@@ -1,14 +1,9 @@
 base:
-  # 配置为ui的svc的名称与端口
-  extSvcName: timeplus-appserver
-  extSvcPort: 8000
-  # 访问ks的域名, e.g. www.ks.com,192.168.50.208.nip.io
+  # 配置为可访问kubesphere部署的域名, 如www.ks.com 或 192.168.50.208.nip.io
   domain: www.ks.com
-  # 挂载位置 e.g. topbar,global,toolbox,access,cluster,workspace,project,platformSettings
-  extParent: topbar
-  # ui的超链接名称
-  extTitle: Timeplus
-  # 扩展包描述
-  extDesc: "Timeplus extension"
   # ingress controller 对外服务的Node端口
   ingressPort: 30888
+timeplus-enterprise:
+  timeplusd:
+    # 设置为 1 为单节点，3 为多节点，暂时不支持 1 和 3 以外的值
+    replicas: 1

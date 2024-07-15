@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.extSvcName }}
+  name: { { .Values.extSvcName } }
   namespace: extension-timeplus-enterprise
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
@@ -16,6 +16,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.extSvcName }}
+                name: timeplus-appserver
                 port:
-                  number: {{ .Values.extSvcPort }}
+                  number: 8000
