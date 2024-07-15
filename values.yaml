@@ -4,8 +4,35 @@ base:
   # ingress controller 对外服务的Node端口
   ingressPort: 30888
 timeplus-enterprise:
-  # 必须配置为当前的存储类型，使用以下命令行获得 kubectl get storageclass
-  storageClass: local
   timeplusd:
     # 设置为 1 为单节点，3 为多节点，暂时不支持 1 和 3 以外的值
     replicas: 1
+
+    storage:
+      log:
+        enabled: false
+        # 必须配置为当前的存储类型，使用以下命令行获得 kubectl get storageclass
+        className: local
+        size: 10Gi
+      stream:
+        # 必须配置为当前的存储类型
+        className: local
+        size: 10Gi
+      history:
+        # 必须配置为当前的存储类型
+        className: local
+        size: 10Gi
+
+    # 配置每个 Timeplus数据节点的资源
+    resources:
+      limits:
+        cpu: "2"
+        memory: "6Gi"
+      requests:
+        cpu: "1"
+        memory: 4Gi
+  kv:
+    storage:
+      # 必须配置为当前的存储类型
+      className: local
+      size: 10Gi
