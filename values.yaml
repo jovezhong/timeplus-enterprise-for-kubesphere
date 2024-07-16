@@ -3,8 +3,6 @@ base:
   domain: 192.168.50.208.nip.io
   # ingress controller 对外服务的Node端口
   ingressPort: 30888
-  # extEmbed若为 iframe 则嵌入，若为 link 则新窗口打开
-  extEmbed: link
 timeplus-enterprise:
   timeplusd:
     # 设置为 1 为单节点，3 为多节点，暂时不支持 1 和 3 以外的值

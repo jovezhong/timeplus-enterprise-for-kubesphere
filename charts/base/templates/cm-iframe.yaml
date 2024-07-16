@@ -1,7 +1,9 @@
+{{ if eq .Values.extEmbed "iframe" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: timeplus-enterprise-cm
+  name: timeplus-enterprise-cm-iframe
   namespace: extension-timeplus-enterprise
 data:
   index.js: |-
@@ -368,3 +370,5 @@ data:
             }
         }
     }));
+
+{{ end }}
