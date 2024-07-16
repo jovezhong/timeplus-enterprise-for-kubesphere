@@ -1,0 +1,45 @@
+{{- if .Values.timeplusWeb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timeplus-web
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+    {{- if .Values.timeplusWeb.labels }}
+    {{- toYaml .Values.timeplusWeb.labels | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "timeplus.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: timeplus-web
+  template:
+    metadata:
+      labels:
+        {{- include "timeplus.podLabels" . | nindent 8 }}
+        {{- if .Values.timeplusWeb.labels }}
+        {{- toYaml .Values.timeplusWeb.labels | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: timeplus-web
+    spec:
+      {{- dict "global" .Values.global "self" .Values.timeplusWeb | include "timeplus.nodeAssignment" | nindent 6 }}
+      containers:
+      - name: timeplus-web
+        env:
+        - name: AXION_STATIC_URL_PREFIX
+          value: /static
+        image: {{ include "timeplus.fullImage" .Values.timeplusWeb }}
+        {{- if .Values.timeplusWeb.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.timeplusWeb.imagePullPolicy }}
+        {{- end }}
+        ports:
+        - containerPort: 4000
+          name: http
+          protocol: TCP
+        {{- if .Values.timeplusWeb.resources }}
+        resources:
+          {{- toYaml .Values.timeplusWeb.resources | nindent 10 }}
+        {{- end }}
+{{- end }}

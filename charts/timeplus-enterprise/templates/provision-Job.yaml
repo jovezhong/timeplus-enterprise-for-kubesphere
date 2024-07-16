@@ -1,0 +1,84 @@
+{{- if .Values.provision.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: timeplus-provision
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+    {{- if .Values.timeplusCli.labels }}
+    {{- toYaml .Values.timeplusCli.labels | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      name: timeplus-provision
+      labels:
+        {{- include "timeplus.podLabels" . | nindent 8 }}
+        app.kubernetes.io/component: timeplus-provision
+    spec:
+      {{- dict "global" .Values.global "self" .Values.timeplusCli | include "timeplus.nodeAssignment" | nindent 6 }}
+      restartPolicy: Never
+      containers:
+        - name: timeplus-provision
+          image: {{ include "timeplus.fullImage" .Values.timeplusCli }}
+          {{- if .Values.timeplusCli.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.timeplusCli.imagePullPolicy }}
+          {{- end }}
+          {{- if .Values.timeplusCli.resources }}
+          resources:
+            {{- toYaml .Values.timeplusCli.resources | nindent 10 }}
+          {{- end }}
+          command:
+            - "/bin/bash"
+            - "-c"
+            - |
+              addresses=()
+              license_addr=""
+
+              for i in $(seq 0 {{ .Values.timeplusd.replicas | add -1 }})
+              do
+                  addresses+=("timeplusd-$i.timeplusd-svc.{{- .Release.Namespace -}}.svc.cluster.local")
+              done
+
+              for address in "${addresses[@]}"
+              do
+                url="$address:3218/timeplusd/ping"
+                license_addr="$address:3218/timeplusd/v1/licenses"
+                status_code=0
+
+                while [ "$status_code" -ne 200 ]; do
+                  status_code=$(curl -s -o /dev/null -w "%{http_code}" $url)
+                  
+                  if [ "$status_code" -ne 200 ]; then
+                    echo "Request to $url failed with status code $status_code. Retrying..."
+                    sleep 5
+                  else
+                    echo "Request to $url succeeded with status code 200."
+                  fi
+                done
+              done
+
+              driver_addresses=""
+              for address in "${addresses[@]}"
+              do
+                addr="$address:8463"
+                if [ -z "$driver_addresses" ]; then
+                  driver_addresses="$addr"
+                else
+                  driver_addresses="$driver_addresses,$addr"
+                fi
+              done
+
+              # Some extra time
+              sleep 5
+
+            {{- range .Values.provision.users }}
+              timeplus user create --address "$driver_addresses" --admin-password {{ $.Values.timeplusd.defaultAdminPassword | quote }} --user {{ .username | quote}} --password {{ .password | quote }}
+            {{- end }}
+
+            {{- if .Values.provision.license }}
+              curl -X POST "$license_addr" -d '{"created_by": "{{- .Values.timeplusd.defaultAdminUsername -}}", "is_trial": false, "license_key": "{{- .Values.provision.license.key -}}", "license_file": "{{- .Values.provision.license.file | replace "\n" ""  -}}" }'
+            {{- end }}
+{{- end }}

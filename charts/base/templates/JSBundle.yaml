@@ -1,0 +1,13 @@
+apiVersion: extensions.kubesphere.io/v1alpha1
+kind: JSBundle
+metadata:
+  name: timeplus-enterprise-js
+spec:
+  rawFrom:
+    configMapKeyRef:
+      key: index.js
+      name: timeplus-enterprise-cm-{{ .Values.extEmbed }}
+      namespace: extension-timeplus-enterprise
+status:
+  link: /dist/timeplus-enterprise/index.js
+  state: Available

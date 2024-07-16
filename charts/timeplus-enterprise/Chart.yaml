@@ -1,0 +1,21 @@
+apiVersion: v2
+appVersion: 2.3.7
+description: A Helm chart for deploying a cluster of Timeplus Enterprise.
+home: https://www.timeplus.com/
+icon: https://timeplus.io/1_SYMBOL_B.png
+keywords:
+- timeplus
+- realtime
+- streaming
+- analytics
+- monitoring
+- SQL
+kubeVersion: '>= 1.25.0-0'
+maintainers:
+- email: eng@timeplus.com
+  name: Timeplus engineers
+name: timeplus-enterprise
+sources:
+- https://github.com/timeplus-io/proton
+type: application
+version: v2.4.2

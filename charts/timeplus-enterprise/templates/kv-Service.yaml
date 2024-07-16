@@ -1,0 +1,20 @@
+
+{{- if .Values.kv.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: kv-svc
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "timeplus.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: kv
+  ports:
+  - name: kv
+    port: 9444
+    protocol: TCP
+    targetPort: 9444
+{{- end }}

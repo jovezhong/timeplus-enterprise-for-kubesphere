@@ -1,0 +1,5 @@
+node:
+  advertised_host: <timeplusd-name>.timeplusd-svc.<timeplusd-namespace>.svc.cluster.local
+
+cluster:
+  metadata_node_quorum: <metadata-node-quorum>

@@ -1,0 +1,19 @@
+{{- if .Values.timeplusWeb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: timeplus-web-svc
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "timeplus.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "timeplus.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: timeplus-web
+  ports:
+  - name: http
+    port: 4000
+    protocol: TCP
+    targetPort: 4000
+{{- end }}
