@@ -1,8 +1,8 @@
 apiVersion: kubesphere.io/v1alpha1
 name: timeplus-enterprise
-version: 2.4.11
+version: 2.4.12
 displayName:
-  zh: Timeplus 企业版
+  zh: Timeplus 流数据平台
   en: Timeplus Enterprise
 description:
   zh: 多快好省的流数据平台, 内核使用 C++ 编写，提供基于 SQL 和 UDF 的 Kafka 数据处理能力，每秒千万条数据处理，亚秒级端到端处理。
@@ -16,6 +16,8 @@ keywords:
 home: https://timeplus.com
 sources:
   - https://github.com/timeplus-io/proton
+  - https://github.com/jovezhong/timeplus-enterprise-for-kubesphere
+docs: https://docs.timeplus.com/
 kubeVersion: ">=1.25.0-0"
 ksVersion: ">=4.0.0-0"
 maintainers:
@@ -34,6 +36,8 @@ provider:
 icon: ./static/favicon.svg
 screenshots:
   - ./static/screenshots/sql_editor.png
+  - ./static/screenshots/dashboard.png
+  - ./static/screenshots/extension.png
 
 # installationMode describes how to install subcharts, it can be HostOnly or Multicluster.
 # In Multicluster mode, the subchart with tag `extension` will only be deployed to the host cluster,
