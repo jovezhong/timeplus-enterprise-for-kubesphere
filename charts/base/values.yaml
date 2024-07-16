@@ -4,3 +4,5 @@ extParent: topbar
 extTitle: Timeplus
 # 扩展包描述
 extDesc: "Timeplus extension"
+# extEmbed若为 iframe 则嵌入，若为 link 则新窗口打开
+extEmbed: link
