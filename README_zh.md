@@ -67,7 +67,9 @@ kubectl get po -n extension-timeplus-enterprise
 选择数据摄取界面（左边导航栏第二条），选择连接 Kafka 等数据源。也可以选择第一个选项来生成实时数据来体验流数据查询。
 
 ### 激活 Timeplus 许可证
-新安装的 Timeplus Enterprise 提供 30 天全功能免费试用。如需购买许可证继续使用或扩大集群规模，请致函 info@timeplus.com 或联系您的 Timeplus 客户经理。
+新安装的 Timeplus Enterprise 提供 30 天全功能免费试用。可以选择单节点或 3 节点。如需购买许可证继续使用或扩大集群规模，请从 KubeSphere Marketplace 下单，或预约咨询。
+
+请注意，标价为单个节点。标准企业版需要购买 3 个以上节点。
 
 ### 卸载和删除
 如您不再需要试用 Timeplus，可以通过 KubeSphere 的管理界面卸载这一扩展组件。卸载后，请手动清空存储盘。可以通过以下命令查看
